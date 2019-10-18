@@ -5,7 +5,7 @@ from pico2d import *
 
 name = "SmallPauseState"
 image = None
-
+mysec = 0
 
 def enter():
     global image
@@ -32,12 +32,22 @@ def handle_events():
     pass
 
 
+
+def update():
+
+    pass
+
+
 def draw():
+    global mysec
     clear_canvas()
     image.draw(400, 300, 100, 100)
-    main_state.boy.draw()
-    main_state.grass.draw()
-
+    main_state.draw()
+    mysec = mysec + 1
+    if (mysec % 2 == 1):
+        image.draw(400, 300, 100, 100)
+        delay(0.01)
+    delay(0.01)
 
     update_canvas()
     pass
@@ -47,9 +57,6 @@ def draw():
 
 
 
-
-def update():
-    pass
 
 
 def pause():

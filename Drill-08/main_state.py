@@ -61,9 +61,6 @@ def exit():
 
 
 def pause():
-    clear_canvas()
-    boy.draw()
-    grass.draw()
     pass
 
 
