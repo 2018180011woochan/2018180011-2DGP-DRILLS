@@ -7,6 +7,7 @@ from pico2d import *
 import game_framework
 import title_state
 import pause_state
+import small_pause_state
 
 
 name = "MainState"
@@ -60,6 +61,9 @@ def exit():
 
 
 def pause():
+    clear_canvas()
+    boy.draw()
+    grass.draw()
     pass
 
 
@@ -75,7 +79,7 @@ def handle_events():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             game_framework.change_state(title_state)
         elif event.type == SDL_KEYDOWN and event.key == SDLK_p:
-            game_framework.push_state(pause_state)
+            game_framework.push_state(small_pause_state)
 
     pass
 
