@@ -3,13 +3,18 @@ from pico2d import *
 # Boy Event
 # fill here
 
-RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP = range(4)
+RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, LSHIFT_DOWN, RSHIFT_DOWN, LSHIFT_UP, RSHIFT_UP = range(8)
 
 key_event_table = {
     (SDL_KEYDOWN, SDLK_RIGHT): RIGHT_DOWN,
     (SDL_KEYDOWN, SDLK_LEFT): LEFT_DOWN,
     (SDL_KEYUP, SDLK_RIGHT): RIGHT_UP,
-    (SDL_KEYUP, SDLK_LEFT): LEFT_UP
+    (SDL_KEYUP, SDLK_LEFT): LEFT_UP,
+    (SDL_KEYDOWN, SDLK_LSHIFT): LSHIFT_DOWN,
+    (SDL_KEYDOWN, SDLK_RSHIFT): RSHIFT_DOWN,
+    (SDL_KEYUP, SDLK_LSHIFT): LSHIFT_UP,
+    (SDL_KEYUP, SDLK_RSHIFT): RSHIFT_UP
+
 }
 
 
@@ -76,13 +81,57 @@ class RunState:
             boy.image.clip_draw(boy.frame * 100, 0, 100, 100, boy.x, boy.y)
 
 
+class DashState:
+    @staticmethod
+    def enter(boy, event):
+       if event == RSHIFT_DOWN:
+            boy.dash_value = 5
+            boy.timer = 50
+       elif event == LSHIFT_DOWN:
+            boy.dash_value = 5
+            boy.timer = 50
+       elif event == RSHIFT_UP:
+           boy.dash_value = 1
+       elif event == LSHIFT_UP:
+           boy.dash_value = 1
+
+
+
+    @staticmethod
+    def exit(boy, event):
+        pass
+
+    @staticmethod
+    def do(boy):
+        boy.frame = (boy.frame + 1) % 8
+        boy.timer -= 1
+        boy.x += boy.velocity * boy.dash_value
+        boy.x = clamp(25, boy.x, 800 - 25)
+
+        if boy.timer == 0:
+            boy.add_event(RSHIFT_UP)
+            boy.add_event(LSHIFT_UP)
+
+    @staticmethod
+    def draw(boy):
+        if boy.velocity == 1:
+            boy.image.clip_draw(boy.frame * 100, 100, 100, 100, boy.x, boy.y)
+        else:
+            boy.image.clip_draw(boy.frame * 100, 0, 100, 100, boy.x, boy.y)
+
 # fill here
 
 next_state_table = {
     IdleState: {RIGHT_UP: RunState, LEFT_UP: RunState,
                 RIGHT_DOWN: RunState, LEFT_DOWN: RunState},
     RunState: {RIGHT_UP: IdleState, LEFT_UP: IdleState,
-               LEFT_DOWN: IdleState, RIGHT_DOWN: IdleState}
+               LEFT_DOWN: IdleState, RIGHT_DOWN: IdleState,
+               RSHIFT_UP: RunState, LSHIFT_UP: RunState,
+               LSHIFT_DOWN: DashState, RSHIFT_DOWN: DashState},
+    DashState: {RIGHT_UP: IdleState, LEFT_UP: IdleState,
+                RIGHT_DOWN: IdleState, LEFT_DOWN: IdleState,
+                RSHIFT_UP: RunState, LSHIFT_UP: RunState,
+                RSHIFT_DOWN: DashState, LSHIFT_DOWN: DashState}
 # fill here
 }
 
@@ -104,6 +153,7 @@ class Boy:
         self.event_que = []
         self.cur_state = IdleState
         self.cur_state.enter(self, None)
+        self.dash_value = 0
         # fill here
         pass
 
