@@ -11,14 +11,22 @@ class Grass:
 
 
 class Boy:
+<<<<<<< HEAD
     image = None
+=======
+>>>>>>> dfe638750c2b09887e22a34892f8c347fecb6377
 
     def __init__(self):
         self.x, self.y = random.randint(100, 700), 90
         self.frame = random.randint(0, 7)
+<<<<<<< HEAD
         #self.image = load_image('run_animation.png')
         if Boy.image == None:
             Boy.image = load_image('run_animation.png')
+=======
+        self.image = load_image('run_animation.png')
+
+>>>>>>> dfe638750c2b09887e22a34892f8c347fecb6377
 
     def update(self):
         self.frame = (self.frame + 1) % 8

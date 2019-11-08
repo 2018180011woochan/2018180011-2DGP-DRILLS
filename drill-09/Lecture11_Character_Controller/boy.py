@@ -2,18 +2,36 @@ from pico2d import *
 
 # Boy Event
 # fill here
+<<<<<<< HEAD
 RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, SLEEP_TIMER = range(5)
+=======
+
+RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, LSHIFT_DOWN, RSHIFT_DOWN, LSHIFT_UP, RSHIFT_UP = range(8)
+>>>>>>> dfe638750c2b09887e22a34892f8c347fecb6377
 
 key_event_table = {
     (SDL_KEYDOWN, SDLK_RIGHT): RIGHT_DOWN,
     (SDL_KEYDOWN, SDLK_LEFT): LEFT_DOWN,
     (SDL_KEYUP, SDLK_RIGHT): RIGHT_UP,
+<<<<<<< HEAD
     (SDL_KEYUP, SDLK_LEFT): LEFT_UP
+=======
+    (SDL_KEYUP, SDLK_LEFT): LEFT_UP,
+    (SDL_KEYDOWN, SDLK_LSHIFT): LSHIFT_DOWN,
+    (SDL_KEYDOWN, SDLK_RSHIFT): RSHIFT_DOWN,
+    (SDL_KEYUP, SDLK_LSHIFT): LSHIFT_UP,
+    (SDL_KEYUP, SDLK_RSHIFT): RSHIFT_UP
+
+>>>>>>> dfe638750c2b09887e22a34892f8c347fecb6377
 }
 
 
 
 # Boy States
+<<<<<<< HEAD
+=======
+
+>>>>>>> dfe638750c2b09887e22a34892f8c347fecb6377
 class IdleState:
     @staticmethod
     def enter(boy, event):
@@ -40,9 +58,13 @@ class IdleState:
     def draw(boy):
         if boy.dir == 1:
             boy.image.clip_draw(boy.frame * 100, 300, 100, 100, boy.x, boy.y)
+<<<<<<< HEAD
         else:
             boy.image.clip_draw(boy.frame * 100, 200, 100, 100, boy.x, boy.y)
 
+=======
+        else: boy.image.clip_draw(boy.frame * 100, 200, 100, 100, boy.x, boy.y)
+>>>>>>> dfe638750c2b09887e22a34892f8c347fecb6377
 
 class RunState:
     @staticmethod
@@ -66,7 +88,50 @@ class RunState:
         boy.frame = (boy.frame + 1) % 8
         boy.timer -= 1
         boy.x += boy.velocity
+<<<<<<< HEAD
         boy.y = clamp(25, boy.x, 800-25)
+=======
+        boy.x = clamp(25, boy.x, 800 - 25)
+
+    @staticmethod
+    def draw(boy):
+        if boy.velocity == 1:
+            boy.image.clip_draw(boy.frame * 100, 100, 100, 100, boy.x, boy.y)
+        else:
+            boy.image.clip_draw(boy.frame * 100, 0, 100, 100, boy.x, boy.y)
+
+
+class DashState:
+    @staticmethod
+    def enter(boy, event):
+       if event == RSHIFT_DOWN:
+            boy.dash_value = 5
+            boy.timer = 50
+       elif event == LSHIFT_DOWN:
+            boy.dash_value = 5
+            boy.timer = 50
+       elif event == RSHIFT_UP:
+           boy.dash_value = 1
+       elif event == LSHIFT_UP:
+           boy.dash_value = 1
+
+
+
+    @staticmethod
+    def exit(boy, event):
+        pass
+
+    @staticmethod
+    def do(boy):
+        boy.frame = (boy.frame + 1) % 8
+        boy.timer -= 1
+        boy.x += boy.velocity * boy.dash_value
+        boy.x = clamp(25, boy.x, 800 - 25)
+
+        if boy.timer == 0:
+            boy.add_event(RSHIFT_UP)
+            boy.add_event(LSHIFT_UP)
+>>>>>>> dfe638750c2b09887e22a34892f8c347fecb6377
 
     @staticmethod
     def draw(boy):
@@ -80,8 +145,19 @@ class RunState:
 next_state_table = {
     IdleState: {RIGHT_UP: RunState, LEFT_UP: RunState,
                 RIGHT_DOWN: RunState, LEFT_DOWN: RunState},
+<<<<<<< HEAD
     RunState: {RIGHT_UP : IdleState, LEFT_UP: IdleState,
                LEFT_DOWN: IdleState, RIGHT_DOWN: IdleState}
+=======
+    RunState: {RIGHT_UP: IdleState, LEFT_UP: IdleState,
+               LEFT_DOWN: IdleState, RIGHT_DOWN: IdleState,
+               RSHIFT_UP: RunState, LSHIFT_UP: RunState,
+               LSHIFT_DOWN: DashState, RSHIFT_DOWN: DashState},
+    DashState: {RIGHT_UP: IdleState, LEFT_UP: IdleState,
+                RIGHT_DOWN: IdleState, LEFT_DOWN: IdleState,
+                RSHIFT_UP: RunState, LSHIFT_UP: RunState,
+                RSHIFT_DOWN: DashState, LSHIFT_DOWN: DashState}
+>>>>>>> dfe638750c2b09887e22a34892f8c347fecb6377
 # fill here
 }
 
@@ -103,16 +179,28 @@ class Boy:
         self.event_que = []
         self.cur_state = IdleState
         self.cur_state.enter(self, None)
+<<<<<<< HEAD
+=======
+        self.dash_value = 0
+>>>>>>> dfe638750c2b09887e22a34892f8c347fecb6377
         # fill here
         pass
 
     def update_state(self):
         if len(self.event_que) > 0:
             event = self.event_que.pop()
+<<<<<<< HEAD
             self.cur_state.exit(self.event)
             self.cur_state = next_state_table[self.cur_state][event]
             self.cur_state.enter(self, event)
 
+=======
+            self.cur_state.exit(self, event)
+            self.cur_state = next_state_table[self.cur_state][event]
+            self.cur_state.enter(self, event)
+
+
+>>>>>>> dfe638750c2b09887e22a34892f8c347fecb6377
     def change_state(self,  state):
         # fill here
         pass
@@ -132,6 +220,10 @@ class Boy:
             self.cur_state = next_state_table[self.cur_state][event]
             self.cur_state.enter(self, event)
         # fill here
+<<<<<<< HEAD
+=======
+
+>>>>>>> dfe638750c2b09887e22a34892f8c347fecb6377
         pass
 
 
@@ -145,6 +237,7 @@ class Boy:
         if (event.type, event.key) in key_event_table:
             key_event = key_event_table[(event.type, event.key)]
             self.add_event(key_event)
+<<<<<<< HEAD
         # fill here
         pass
 
@@ -171,3 +264,9 @@ class SleepState:
         else:
             boy.image.clip_composite_draw(boy.frame * 100, 200, 100, 100,
                       3.141592 / 2, '', boy.x - 25, boy.y - 25, 100, 100)
+=======
+
+        # fill here
+        pass
+
+>>>>>>> dfe638750c2b09887e22a34892f8c347fecb6377
