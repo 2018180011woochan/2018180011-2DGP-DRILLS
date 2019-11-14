@@ -16,7 +16,6 @@ TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
 
-gravity = -0.05
 
 
 # Boy Event
@@ -45,12 +44,13 @@ class IdleState:
             boy.velocity -= RUN_SPEED_PPS
         elif event == LEFT_UP:
             boy.velocity += RUN_SPEED_PPS
-        elif event == SPACE:
-            boy.jump_value = 0
+
         boy.timer = 1000
 
     @staticmethod
     def exit(boy, event):
+        if event == SPACE:
+            boy.jump_value = 0
         pass
 
     @staticmethod
@@ -60,7 +60,6 @@ class IdleState:
         if boy.timer == 0:
             boy.add_event(SLEEP_TIMER)
         boy.y += boy.jump_value * game_framework.frame_time
-        boy.jump_value += boy.jump_speed
 
     @staticmethod
     def draw(boy):
@@ -98,7 +97,7 @@ class RunState:
         boy.x += boy.velocity * game_framework.frame_time
         boy.x = clamp(25, boy.x, 1600 - 25)
         boy.y += boy.jump_value
-        boy.jump_value += boy.jump_speed
+
 
     @staticmethod
     def draw(boy):
@@ -150,7 +149,6 @@ class Boy:
         self.cur_state = IdleState
         self.cur_state.enter(self, None)
         self.jump_value = 0
-        self.jump_speed = gravity
 
     def get_bb(self):
         return self.x - 25, self.y - 50, self.x + 25, self.y + 50
@@ -168,6 +166,11 @@ class Boy:
 
         if self.y < 90:
             self.y = 90
+        self.y += self.jump_value
+        if self.y > 300:
+            self.jump_value = -1
+        if self.y < 90:
+            self.jump_value = 0
 
     def draw(self):
         self.cur_state.draw(self)
