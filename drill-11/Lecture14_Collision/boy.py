@@ -82,7 +82,7 @@ class RunState:
         elif event == LEFT_UP:
             boy.velocity += RUN_SPEED_PPS
         elif event == SPACE:
-            boy.jump_value = 5
+            boy.jump_value = 3
         boy.dir = clamp(-1, boy.velocity, 1)
 
 
