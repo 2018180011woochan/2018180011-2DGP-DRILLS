@@ -59,18 +59,35 @@ class Zombie:
         self.timer -= game_framework.frame_time
         if self.timer < 0:
             self.timer += 1.0
-        self.dir = random.random() * 2 * math.pi
+            self.dir = random.random() * 2 * math.pi
         return BehaviorTree.SUCCESS
 
     def find_player(self):
         boy = main_state.get_boy()
         distance = (boy.x - self.x) ** 2 + (boy.y - self.y) ** 2
-        if distance < (PIXEL_PER_METER * 10) ** 2:
+        if distance < (PIXEL_PER_METER * 8) ** 2:
             self.dir = math.atan2(boy.y - self.y, boy.x - self.x)
             return BehaviorTree.SUCCESS
         else:
             self.speed = 0
             return BehaviorTree.FAIL
+        pass
+
+    def find_BigBall(self):
+        bigball = main_state.get_BigBall()
+        distance = (bigball.x - self.x) ** 2 + (bigball.y - self.y) ** 2
+        if distance < (PIXEL_PER_METER * 5) ** 2:
+            self.dir = math.atan2(bigball.y - self.y, bigball.x - self.x)
+            return BehaviorTree.SUCCESS
+        else:
+            self.speed = 0
+            return BehaviorTree.FAIL
+        pass
+
+    def move_to_BigBall(self):
+        self.speed = RUN_SPEED_PPS
+        self.calculate_current_position()
+        return BehaviorTree.SUCCESS
         pass
 
     def move_to_player(self):
@@ -99,10 +116,14 @@ class Zombie:
 
     def build_behavior_tree(self):
         wander_node = LeafNode("Wander", self.wander)
+        #find_bigball_node = LeafNode("Find BigBall", self.find_BigBall)
+        #move_to_bigball_node = LeafNode("Move to BigBall", self.move_to_BigBall)
         find_player_node = LeafNode("Find Player", self.find_player)
         move_to_player_node = LeafNode("Move to Player", self.move_to_player)
         chase_node = SequenceNode("Chase")
+        #chase_node.add_children(find_bigball_node, move_to_bigball_node)
         chase_node.add_children(find_player_node, move_to_player_node)
+
         wander_chase_node = SelectorNode("WanderChase")
         wander_chase_node.add_children(chase_node, wander_node)
         self.bt = BehaviorTree(wander_chase_node)
