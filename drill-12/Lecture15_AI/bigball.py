@@ -19,7 +19,6 @@ class BigBall:
 
     def draw(self):
         self.image.draw(self.x, self.y)
-        # fill here for draw
         draw_rectangle(*self.get_bb())
 
     def update(self):

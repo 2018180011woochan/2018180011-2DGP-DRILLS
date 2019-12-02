@@ -44,7 +44,9 @@ class Zombie:
         self.speed = 0
         self.timer = 1.0  # change direction every 1 sec when wandering
         self.frame = 0
+        self.font = load_font('ENCR10B.TTF', 16)
         self.build_behavior_tree()
+        self.score = 0
 
     def calculate_current_position(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
@@ -116,12 +118,12 @@ class Zombie:
 
     def build_behavior_tree(self):
         wander_node = LeafNode("Wander", self.wander)
-        #find_bigball_node = LeafNode("Find BigBall", self.find_BigBall)
-        #move_to_bigball_node = LeafNode("Move to BigBall", self.move_to_BigBall)
+        find_bigball_node = LeafNode("Find BigBall", self.find_BigBall)
+        move_to_bigball_node = LeafNode("Move to BigBall", self.move_to_BigBall)
         find_player_node = LeafNode("Find Player", self.find_player)
         move_to_player_node = LeafNode("Move to Player", self.move_to_player)
         chase_node = SequenceNode("Chase")
-        #chase_node.add_children(find_bigball_node, move_to_bigball_node)
+        chase_node.add_children(find_bigball_node, move_to_bigball_node)
         chase_node.add_children(find_player_node, move_to_player_node)
 
         wander_chase_node = SelectorNode("WanderChase")
@@ -152,6 +154,8 @@ class Zombie:
                 Zombie.images['Idle'][int(self.frame)].draw(self.x, self.y, 100, 100)
             else:
                 Zombie.images['Walk'][int(self.frame)].draw(self.x, self.y, 100, 100)
+
+        #self.font.draw(self.x - 60, self.y + 50, self.score, (255, 255, 0))
 
     def handle_event(self, event):
         pass

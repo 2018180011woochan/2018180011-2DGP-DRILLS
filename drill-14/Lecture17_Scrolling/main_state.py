@@ -7,18 +7,14 @@ import game_framework
 import game_world
 
 from boy import Boy
-from ground import Ground
-from zombie import Zombie
+from background import FixedBackground as Background
 from ball import Ball
-from bigball import BigBall
-
 
 name = "MainState"
 
 boy = None
-zombie = None
+background = None
 ball = None
-bigball = None
 
 def collide(a, b):
     # fill here
@@ -37,31 +33,23 @@ def collide(a, b):
 def get_boy():
     return boy
 
-def get_BigBall():
-    return bigball
-
-def get_Ball():
-    return ball
 
 def enter():
     global boy
     boy = Boy()
     game_world.add_object(boy, 1)
 
-    global zombie
-    zombie = Zombie()
-    game_world.add_object(zombie, 1)
+    global background
+    background = Background()
+    game_world.add_object(background, 0)
 
     global balls
-    balls = [Ball() for i in range(3)]
-    game_world.add_objects(balls, 1)
+    balls = [Ball() for i in range(100)]
+    game_world.add_objects(balls, 0)
 
-    global bigballs
-    bigballs = [BigBall() for i in range(3)]
-    game_world.add_objects(bigballs, 1)
+    background.set_center_object(boy)
+    boy.set_background(background)
 
-    ground = Ground()
-    game_world.add_object(ground, 0)
 
 def exit():
     game_world.clear()
@@ -88,17 +76,11 @@ def handle_events():
 def update():
     for game_object in game_world.all_objects():
         game_object.update()
-
-    for bigball in bigballs:
-        if collide(zombie, bigball):
-            bigballs.remove(bigball)
-            game_world.remove_object(bigball)
-
     for ball in balls:
-        if collide(zombie, ball):
+        if collide(boy, ball):
             balls.remove(ball)
             game_world.remove_object(ball)
-
+            boy.score += 1
 
 def draw():
     clear_canvas()
